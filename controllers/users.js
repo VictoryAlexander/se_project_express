@@ -1,16 +1,16 @@
-const user = require('../models/user');
+const users = require('../models/users');
 const { invalidDataError, nonExistentError, defaultError } = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
-  user.find({})
-    .then(users => res.send({ data: users }))
-    .catch(err => res.status(500).send({ message: err.message }));
+  users.find({})
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(defaultError).send({ message: err.message }));
 };
 
 module.exports.getUser = (req, res) => {
   const { userId } = req.params;
 
-  user.findById(userId)
+  users.findById(userId)
     .then((user) => {
       if (!user) {
         return res.status(nonExistentError).send({ message: "User not found" })
@@ -20,8 +20,8 @@ module.exports.getUser = (req, res) => {
     .catch((err) => {
       if (err.name === "CastError") {
         res.status(invalidDataError).send({ message: "Invalid user id" })
-      }else {
-        res.status(500).send({ message: err.message})
+      } else {
+        res.status(defaultError).send({ message: err.message})
       }
     });
 };
@@ -29,7 +29,13 @@ module.exports.getUser = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, avatar } = req.body;
 
-  user.create({ name, avatar })
+  users.create({ name, avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(invalidDataError).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === "CastError") {
+        res.status(invalidDataError).send({ message: "Invalid user id" })
+      } else {
+        res.status(defaultError).send({ message: err.message})
+      }
+    });
 };

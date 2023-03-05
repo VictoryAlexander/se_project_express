@@ -4,7 +4,7 @@ const { invalidDataError, nonExistentError, defaultError } = require('../utils/e
 module.exports.getItems = (req, res) => {
   clothingItem.find({})
     .then(items => res.send({ data: items }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(defaultError).send({ message: err.message }));
 };
 
 module.exports.createItem = (req, res) => {
@@ -17,7 +17,7 @@ module.exports.createItem = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(invalidDataError).send({ message: 'Invalid Name' })
       }
-      return res.status(500).send({ message: err.message })
+      return res.status(defaultError).send({ message: err.message })
     });
 };
 
@@ -33,7 +33,7 @@ module.exports.deleteItem = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(invalidDataError).send({ message: 'Invalid Id' })
       }
-      return res.status(500).send({ message: err.message })
+      return res.status(defaultError).send({ message: err.message })
     });
 };
 
@@ -52,7 +52,7 @@ module.exports.likeItem = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(invalidDataError).send({ message: 'Invalid Id' })
       }
-      return res.status(500).send({ message: err.message })
+      return res.status(defaultError).send({ message: err.message })
     });
 };
 
@@ -71,6 +71,6 @@ module.exports.dislikeItem = (req, res) => {
     if (err.name === 'CastError') {
       return res.status(invalidDataError).send({ message: 'Invalid Id' })
     }
-    return res.status(500).send({ message: err.message })
+    return res.status(defaultError).send({ message: err.message })
   });
 };
