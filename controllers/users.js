@@ -32,7 +32,7 @@ module.exports.createUser = (req, res) => {
   users.create({ name, avatar })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === "ValidationError") {
         res.status(invalidDataError).send({ message: "Invalid user id" })
       } else {
         res.status(defaultError).send({ message: err.message})
