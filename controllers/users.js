@@ -4,7 +4,7 @@ const { invalidDataError, nonExistentError, defaultError } = require('../utils/e
 module.exports.getUsers = (req, res) => {
   users.find({})
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(defaultError).send({ message: err.message }));
+    .catch(err => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -21,7 +21,7 @@ module.exports.getUser = (req, res) => {
       if (err.name === "CastError") {
         res.status(invalidDataError).send({ message: "Invalid user id" })
       } else {
-        res.status(defaultError).send({ message: err.message})
+        res.status(defaultError).send({ message: 'An error has occurred on the server.' })
       }
     });
 };
@@ -35,7 +35,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(invalidDataError).send({ message: "Invalid user id" })
       } else {
-        res.status(defaultError).send({ message: err.message})
+        res.status(defaultError).send({ message: 'An error has occurred on the server.' })
       }
     });
 };
