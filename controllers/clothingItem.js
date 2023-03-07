@@ -4,7 +4,7 @@ const { invalidDataError, nonExistentError, defaultError } = require('../utils/e
 module.exports.getItems = (req, res) => {
   clothingItem.find({})
     .then(items => res.send({ data: items }))
-    .catch(err => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
+    .catch(() => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
 };
 
 module.exports.createItem = (req, res) => {

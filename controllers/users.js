@@ -4,7 +4,7 @@ const { invalidDataError, nonExistentError, defaultError } = require('../utils/e
 module.exports.getUsers = (req, res) => {
   users.find({})
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
+    .catch(() => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
 };
 
 module.exports.getUser = (req, res) => {
