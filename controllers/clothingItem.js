@@ -1,5 +1,5 @@
 const clothingItem = require('../models/clothingItem');
-const { invalidDataError, nonExistentError, defaultError } = require('../utils/errors');
+const { invalidDataError, forbiddenError, nonExistentError, defaultError } = require('../utils/errors');
 
 module.exports.getItems = (req, res) => {
   clothingItem.find({})
@@ -24,10 +24,13 @@ module.exports.createItem = (req, res) => {
 module.exports.deleteItem = (req, res) => {
   clothingItem.findByIdAndRemove(req.params.itemId)
     .then((item) => {
+      if (item.owner === req.user._id) {
+        return res.send({ data: item });
+      }
       if (!item) {
         return res.status(nonExistentError).send({ message: "Item not found" })
       }
-      return res.send({ data: item })
+      return res.status(forbiddenError).send({ message: 'You are not the owner of this item' })
     })
     .catch((err) => {
       if (err.name === 'CastError') {
