@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
 const jwt = require('jsonwebtoken');
-const { invalidDataError, unAuthorizedError, nonExistentError, defaultError } = require('../utils/errors');
+const { invalidDataError, unAuthorizedError, nonExistentError, conflictError, defaultError } = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
   users.find({})
@@ -10,9 +10,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getCurrentUser = (req, res) => {
-  const { userId } = req.params;
-
-  users.findById(userId)
+  users.findById(req.user._id)
     .then((user) => {
       if (!user) {
         return res.status(nonExistentError).send({ message: "User not found" })
@@ -38,17 +36,19 @@ module.exports.createUser = (req, res) => {
         password: hash,
     }))
     .then((user) => {
-      if (user) {
-        throw new Error('User Already Exists')
-      }
-      return res.send({ data: user })
+      res.send({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email
+      })
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         res.status(invalidDataError).send({ message: "Invalid user id" })
-      }else if(err) {
-        res.status(409).send({ message: 'User Already Exists' })
-      }else {
+      } else if(err.code === 11000) {
+        res.status(conflictError).send({ message: 'User Already Exists' })
+      } else {
         res.status(defaultError).send({ message: 'An error has occurred on the server.' })
       }
     })
@@ -72,16 +72,14 @@ module.exports.login = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res) => {
-  const { userId } = req.params;
   const { name, avatar } = req.body;
 
   users.findByIdAndUpdate(
-    userId,
+    req.user._id,
     { name, avatar },
     {
       new: true,
       runValidators: true,
-      upsert: true
     }
   )
   .then((user) => {
@@ -92,6 +90,8 @@ module.exports.updateProfile = (req, res) => {
   })
   .catch((err) => {
     if (err.name === "CastError") {
+      res.status(invalidDataError).send({ message: "Invalid user id" })
+    } else if (err.name === "ValidationError") {
       res.status(invalidDataError).send({ message: "Invalid user id" })
     } else {
       res.status(defaultError).send({ message: 'An error has occurred on the server.' })

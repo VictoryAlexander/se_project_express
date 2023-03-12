@@ -22,21 +22,25 @@ module.exports.createItem = (req, res) => {
 };
 
 module.exports.deleteItem = (req, res) => {
-  clothingItem.findByIdAndRemove(req.params.itemId)
+  clothingItem.findById(req.params.itemId)
     .then((item) => {
-      if (item.owner === req.user._id) {
-        return res.send({ data: item });
+      if (!item.owner.equals(req.user._id)) {
+        throw new Error('Invalid Access');
       }
-      if (!item) {
-        return res.status(nonExistentError).send({ message: "Item not found" })
-      }
-      return res.status(forbiddenError).send({ message: 'You are not the owner of this item' })
+      return item.remove(() => res
+        .status(200)
+        .send({ message: 'Item Deleted', deleted: item }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(invalidDataError).send({ message: 'Invalid Id' })
-      }
+      } else if (err.name === 'DocumentNotFoundError') {
+        return res.status(nonExistentError).send({ message: 'Item ID not found' })
+      } else if (err.name === 'Invalid Access') {
+        return res.status(forbiddenError).send({ message: 'Invalid authorization' })
+      } else {
       return res.status(defaultError).send({ message: 'An error has occurred on the server.' })
+      }
     });
 };
 
