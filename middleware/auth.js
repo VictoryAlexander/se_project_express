@@ -9,7 +9,7 @@ const handleAuthError = (res) => {
 };
 
 const extractBearerToken = (header) => {
-  return header.replace('Bearer ', '');
+  header.replace('Bearer ', '');
 };
 
 module.exports = (req, res, next) => {
@@ -30,5 +30,5 @@ module.exports = (req, res, next) => {
 
   req.user = payload;
 
-  next();
+  return next();
 };

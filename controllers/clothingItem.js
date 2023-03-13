@@ -23,24 +23,26 @@ module.exports.createItem = (req, res) => {
 
 module.exports.deleteItem = (req, res) => {
   clothingItem.findById(req.params.itemId)
+    .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
         throw new Error('Invalid Access');
       }
-      return item.remove(() => res
+      return item.deleteOne().then(() => res
         .status(200)
         .send({ message: 'Item Deleted', deleted: item }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(invalidDataError).send({ message: 'Invalid Id' })
-      } else if (err.name === 'DocumentNotFoundError') {
+      } 
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(nonExistentError).send({ message: 'Item ID not found' })
-      } else if (err.name === 'Invalid Access') {
+      } 
+      if (err.name === 'Invalid Access') {
         return res.status(forbiddenError).send({ message: 'Invalid authorization' })
-      } else {
-      return res.status(defaultError).send({ message: 'An error has occurred on the server.' })
       }
+      return res.status(defaultError).send({ message: 'An error has occurred on the server.' })
     });
 };
 

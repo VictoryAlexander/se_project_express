@@ -1,7 +1,8 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
-const jwt = require('jsonwebtoken');
 const { invalidDataError, unAuthorizedError, nonExistentError, conflictError, defaultError } = require('../utils/errors');
+const { JWT_SECRET } = require('../utils/config');
 
 module.exports.getUsers = (req, res) => {
   users.find({})
@@ -64,7 +65,7 @@ module.exports.login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
+    .catch(() => {
       res
         .status(unAuthorizedError)
         .send({ message: 'Authorization Error' });
