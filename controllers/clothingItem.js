@@ -39,7 +39,7 @@ module.exports.deleteItem = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         return res.status(nonExistentError).send({ message: 'Item ID not found' })
       } 
-      if (err.name === 'Invalid Access') {
+      if (err.message === 'Invalid Access') {
         return res.status(forbiddenError).send({ message: 'Invalid authorization' })
       }
       return res.status(defaultError).send({ message: 'An error has occurred on the server.' })
