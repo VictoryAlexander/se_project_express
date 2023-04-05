@@ -3,7 +3,7 @@ const { invalidDataError, forbiddenError, nonExistentError, defaultError } = req
 
 module.exports.getItems = (req, res) => {
   clothingItem.find({})
-    .then(items => res.send({ data: items }))
+    .then(items => res.send(items))
     .catch(() => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
 };
 
