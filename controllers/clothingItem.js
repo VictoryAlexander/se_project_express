@@ -12,7 +12,7 @@ module.exports.createItem = (req, res) => {
   const owner = req.user._id;
 
   clothingItem.create({ name, weather, imageUrl, owner })
-    .then(item => res.send({ data: item }))
+    .then(item => res.send(item))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(invalidDataError).send({ message: 'Invalid Name' })
@@ -30,7 +30,7 @@ module.exports.deleteItem = (req, res) => {
       }
       return item.deleteOne().then(() => res
         .status(200)
-        .send({ message: 'Item Deleted', deleted: item }));
+        .send(item ));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -55,7 +55,7 @@ module.exports.likeItem = (req, res) => {
       if (!item) {
         return res.status(nonExistentError).send({ message: "Item not found" })
       }
-      return res.send({ data: item })
+      return res.send(item)
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -74,7 +74,7 @@ module.exports.dislikeItem = (req, res) => {
     if (!item) {
       return res.status(nonExistentError).send({ message: "Item not found" })
     }
-    return res.send({ data: item })
+    return res.send(item)
   })
   .catch((err) => {
     if (err.name === 'CastError') {
