@@ -1,28 +1,29 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
-const { invalidDataError, unAuthorizedError, nonExistentError, conflictError, defaultError } = require('../utils/errors');
+const { BadRequestError, UnauthorizedError, NotFoundError, ConflictError, ServerError } = require('../utils/errors');
 const { JWT_SECRET } = require('../utils/config');
+const defaultError = new ServerError('An error has occurred on the server.');
 
 module.exports.getUsers = (req, res) => {
   users.find({})
     .then(user => res.send({ data: user }))
-    .catch(() => res.status(defaultError).send({ message: 'An error has occurred on the server.' }));
+    .catch(() => next(defaultError));
 };
 
 module.exports.getCurrentUser = (req, res) => {
   users.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res.status(nonExistentError).send({ message: "User not found" })
+        next(new NotFoundError("User not found"));
       }
-      return res.send({ data: user })
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        res.status(invalidDataError).send({ message: "Invalid user id" })
+        next(new BadRequestError("Invalid user id"));
       } else {
-        res.status(defaultError).send({ message: 'An error has occurred on the server.' })
+        next(defaultError);
       }
     });
 };
@@ -46,11 +47,11 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(invalidDataError).send({ message: "Invalid user id" })
+        next(new BadRequestError("Invalid user id"));
       } else if(err.code === 11000) {
-        res.status(conflictError).send({ message: 'User Already Exists' })
+        next(new ConflictError('User Already Exists'));
       } else {
-        res.status(defaultError).send({ message: 'An error has occurred on the server.' })
+        next(defaultError);
       }
     })
 };
@@ -66,9 +67,7 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch(() => {
-      res
-        .status(unAuthorizedError)
-        .send({ message: 'Authorization Error' });
+      next(new UnauthorizedError('Authorization Error'));
     });
 };
 
@@ -85,17 +84,17 @@ module.exports.updateProfile = (req, res) => {
   )
   .then((user) => {
     if (!user) {
-      return res.status(nonExistentError).send({ message: "User not found" })
+      next(new NotFoundError("User not found"));
     }
     return res.send({ data: user })
   })
   .catch((err) => {
     if (err.name === "CastError") {
-      res.status(invalidDataError).send({ message: "Invalid user id" })
+      next(new BadRequestError("Invalid user id"));
     } else if (err.name === "ValidationError") {
-      res.status(invalidDataError).send({ message: "Invalid user id" })
+      next(new BadRequestError("Invalid user id"));
     } else {
-      res.status(defaultError).send({ message: 'An error has occurred on the server.' })
+      next(defaultError);
     }
   });
 }
