@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
 const { BadRequestError, UnauthorizedError, NotFoundError, ConflictError, ServerError } = require('../utils/errors');
-const { JWT_SECRET } = require('../utils/config');
 const defaultError = new ServerError('An error has occurred on the server.');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res) => {
   users.find({})
@@ -61,7 +61,7 @@ module.exports.login = (req, res) => {
 
   return users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'HE DOESNT KNOW', {
         expiresIn: '7d',
       });
       res.send({ token });
