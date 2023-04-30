@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const helmet = require('helmet');
 const cors = require('cors');
-const { PORT = 3001 } = process.env;
-const app = express();
+const { errors } = require('celebrate');
 const routes = require('./routes')
 const limiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
-const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middleware/logger');
+
+const app = express();
+const { PORT = 3001 } = process.env;
 
 mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db');
 

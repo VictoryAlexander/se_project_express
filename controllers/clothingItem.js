@@ -3,9 +3,10 @@ const { BadRequestError } = require('../utils/errors/BadRequestError');
 const { ForbiddenError } = require('../utils/errors/ForbiddenError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { ServerError } = require('../utils/errors/ServerError');
+
 const defaultError = new ServerError('An error has occurred on the server.');
 
-module.exports.getItems = (req, res) => {
+module.exports.getItems = (req, res, next) => {
   clothingItem.find({})
     .then(items => res.send(items))
     .catch(() => next(defaultError));
@@ -25,7 +26,7 @@ module.exports.createItem = (req, res, next) => {
     });
 };
 
-module.exports.deleteItem = (req, res) => {
+module.exports.deleteItem = (req, res, next) => {
   clothingItem.findById(req.params.itemId)
     .orFail()
     .then((item) => {
@@ -50,7 +51,7 @@ module.exports.deleteItem = (req, res) => {
     });
 };
 
-module.exports.likeItem = (req, res) => {
+module.exports.likeItem = (req, res, next) => {
   clothingItem.findByIdAndUpdate(req.params.itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
@@ -69,7 +70,7 @@ module.exports.likeItem = (req, res) => {
     });
 };
 
-module.exports.dislikeItem = (req, res) => {
+module.exports.dislikeItem = (req, res, next) => {
   clothingItem.findByIdAndUpdate(req.params.itemId, 
     { $pull: { likes: req.user._id } },
     { new: true },
