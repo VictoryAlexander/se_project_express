@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
-const { BadRequestError } = require('../utils/errors/BadRequestError');
-const { ConflictError } = require('../utils/errors/ConflictError');
-const { NotFoundError } = require('../utils/errors/NotFoundError');
-const { ServerError } = require('../utils/errors/ServerError');
-const { UnauthorizedError } = require('../utils/errors/UnauthorizedError');
+const BadRequestError = require('../utils/errors/BadRequestError');
+const ConflictError = require('../utils/errors/ConflictError');
+const NotFoundError = require('../utils/errors/NotFoundError');
+const ServerError = require('../utils/errors/ServerError');
+const UnauthorizedError = require('../utils/errors/UnauthorizedError');
 
 const defaultError = new ServerError('An error has occurred on the server.');
 const { NODE_ENV, JWT_SECRET } = process.env;

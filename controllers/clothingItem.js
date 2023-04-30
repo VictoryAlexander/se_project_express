@@ -1,8 +1,8 @@
 const clothingItem = require('../models/clothingItem');
-const { BadRequestError } = require('../utils/errors/BadRequestError');
-const { ForbiddenError } = require('../utils/errors/ForbiddenError');
-const { NotFoundError } = require('../utils/errors/NotFoundError');
-const { ServerError } = require('../utils/errors/ServerError');
+const BadRequestError = require('../utils/errors/BadRequestError');
+const ForbiddenError = require('../utils/errors/ForbiddenError');
+const NotFoundError = require('../utils/errors/NotFoundError');
+const ServerError = require('../utils/errors/ServerError');
 
 const defaultError = new ServerError('An error has occurred on the server.');
 
