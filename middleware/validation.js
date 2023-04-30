@@ -31,10 +31,7 @@ validateExistingUser = celebrate({
   })
 })
 
-validateNewCard = celebrate({
-  user: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24),
-  }),
+validateNewItem = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
       "string.min": 'The minimum length of the "name" field is 2',
@@ -44,7 +41,8 @@ validateNewCard = celebrate({
     imageURL: Joi.string().required().custom(validateURL).messages({
       'string.empty': 'The "image" field must be filled in',
       'string.uri': 'the "image" field must be a valid url',
-    })
+    }),
+    weather: Joi.string().valid('hot', 'warm', 'cold')
   })
 })
 
@@ -57,5 +55,6 @@ validateDeletedCard = celebrate({
 module.exports = {
   validateNewUser,
   validateExistingUser,
-  validateNewCard
+  validateNewItem,
+  validateDeletedCard
 }

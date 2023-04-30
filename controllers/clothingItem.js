@@ -1,5 +1,8 @@
 const clothingItem = require('../models/clothingItem');
-const { BadRequestError, ForbiddenError, NotFoundError, ServerError } = require('../utils/errors');
+const { BadRequestError } = require('../utils/errors/BadRequestError');
+const { ForbiddenError } = require('../utils/errors/ForbiddenError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { ServerError } = require('../utils/errors/ServerError');
 const defaultError = new ServerError('An error has occurred on the server.');
 
 module.exports.getItems = (req, res) => {
@@ -16,9 +19,9 @@ module.exports.createItem = (req, res, next) => {
     .then(item => res.send(item))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Invalid Name'));
+        return next(new BadRequestError('Invalid Name'));
       }
-      next(defaultError);
+      return next(defaultError);
     });
 };
 
@@ -35,15 +38,15 @@ module.exports.deleteItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Invalid Id'));
+        return next(new BadRequestError('Invalid Id'));
       }
       if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Item ID not found'));
+        return next(new NotFoundError('Item ID not found'));
       }
       if (err.message === 'Invalid Access') {
-        next(new ForbiddenError('Invalid authorization'));
+        return next(new ForbiddenError('Invalid authorization'));
       }
-      next(defaultError);
+      return next(defaultError);
     });
 };
 
@@ -54,15 +57,15 @@ module.exports.likeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        next(new NotFoundError("Item not found"));
+        return next(new NotFoundError("Item not found"));
       }
       return res.send(item)
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Invalid Id'));
+        return next(new BadRequestError('Invalid Id'));
       }
-      next(defaultError);
+      return next(defaultError);
     });
 };
 
@@ -73,14 +76,14 @@ module.exports.dislikeItem = (req, res) => {
   )
   .then((item) => {
     if (!item) {
-      next(new NotFoundError("Item not found"));
+      return next(new NotFoundError("Item not found"));
     }
     return res.send(item)
   })
   .catch((err) => {
     if (err.name === 'CastError') {
-      next(new BadRequestError('Invalid Id'))
+      return next(new BadRequestError('Invalid Id'))
     }
-    next(defaultError);
+    return next(defaultError);
   });
 };

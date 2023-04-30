@@ -13,3 +13,8 @@ The back-end project is focused on creating a server for the WTWR application. Y
 The project features seperate file structures through modeling, controllers, middleware, routes, and utils.
 This project features user routing with authorization, signup and signin features.
 Users have the ability to create new clothing items with the ability to like and dislike items feature by other users.
+
+## Domain Names
+
+Frontend: wtwr.minecraftnoob.com
+Backend: api.wtwr.minecraftnoob.com

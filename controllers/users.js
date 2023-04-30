@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const users = require('../models/users');
-const { BadRequestError, UnauthorizedError, NotFoundError, ConflictError, ServerError } = require('../utils/errors');
+const { BadRequestError } = require('../utils/errors/BadRequestError');
+const { ConflictError } = require('../utils/errors/ConflictError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { ServerError } = require('../utils/errors/ServerError');
+const { UnauthorizedError } = require('../utils/errors/UnauthorizedError');
 const defaultError = new ServerError('An error has occurred on the server.');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -11,11 +15,11 @@ module.exports.getUsers = (req, res) => {
     .catch(() => next(defaultError));
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   users.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError("User not found"));
+        return next(new NotFoundError("User not found"));
       }
       return res.send({ data: user });
     })
@@ -28,7 +32,7 @@ module.exports.getCurrentUser = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
 
   bcrypt.hash(req.body.password, 10)
     .then((hash) => users.create({
@@ -56,7 +60,7 @@ module.exports.createUser = (req, res) => {
     })
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -71,7 +75,7 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   users.findByIdAndUpdate(
@@ -84,7 +88,7 @@ module.exports.updateProfile = (req, res) => {
   )
   .then((user) => {
     if (!user) {
-      next(new NotFoundError("User not found"));
+      return next(new NotFoundError("User not found"));
     }
     return res.send({ data: user })
   })
